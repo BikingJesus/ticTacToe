@@ -10,6 +10,7 @@ function Game:__init(size, player1, player2)
     self.size = size
     self.currentPlayer = 1
     self.count = 0
+    self.students = {}
 end
 
 function Game:getWinner ()
@@ -37,7 +38,7 @@ function Game:run ()
                 player,
                 movesLeft)
             )
-            local action =  player:doMove (self)
+            local action =  player:doMove (self, self.currentPlayer)
             assert (action, string.format("No action given by player %s", player))
             print (string.format("Move chosen. Thx %s.",player))
             won = self:doAction (action)
@@ -61,18 +62,31 @@ function Game:doAction (action)
         --palyer -1 -> one-cold instead of one-hot.
         action = action * self.currentPlayer
         local sumOld = self.field:sum()
+        local originalField = self.field:clone ()
         self.field = self.field + action
         assert (self.field:sum() - sumOld == self.currentPlayer)
         won = self:getWinner ()
-        self.currentPlayer = self.currentPlayer * -1
         self.count = self.count + 1
         print (string.format(
         "Action done. You %s won.",
         won and "have" or "have not yet"))
+        self:teach (originalField, action)
+        self.currentPlayer = self.currentPlayer * -1
     else
         print "Action not possible."
     end
     return won
+end
+
+function Game:teach (field, move)
+    field = field * self.currentPlayer
+    move = move * self.currentPlayer
+    local reward = self:getWinner () and 1 or 0
+    for _, student in ipairs (self.students) do
+        local err = students:learn (reward, field, move)
+        print (err)
+    end
+
 end
 
 function Game:isAllowed (action)
@@ -81,16 +95,13 @@ function Game:isAllowed (action)
     local check = self.field:clone():cmul (action)
     local max = check:max ()
     local min = check:min ()
-    print ("sould be 0: ",max, min)
+    --print ("sould be 0: ",max, min)
     --print (check)
     --print (self.field)
     --print (self.action)
     return min == max and max == 0
 end
 
---function Game:getPossibleMoves ()
---    
---end
 
 function Game:plot ()
     require "gnuplot"
@@ -100,12 +111,12 @@ function Game:plot ()
         y= torch.Tensor (self.size*self.size*self.size):fill(-1),
         z= torch.Tensor (self.size*self.size*self.size):fill(-1)
     }
-    player[0] = {   
+    player[0] = {
         x= torch.Tensor (self.size*self.size*self.size):fill(-1),
         y= torch.Tensor (self.size*self.size*self.size):fill(-1),
         z= torch.Tensor (self.size*self.size*self.size):fill(-1)
-    }             
-    player[-1] = { 
+    }
+    player[-1] = {
         x= torch.Tensor (self.size*self.size*self.size):fill(-1),
         y= torch.Tensor (self.size*self.size*self.size):fill(-1),
         z= torch.Tensor (self.size*self.size*self.size):fill(-1)
