@@ -1,13 +1,20 @@
 local RPlayer , Player = torch.class ("RandomPlayer", "Player")
 
-function Game:doMove (game)
-    local size = math.floor (math.rand()* math.pow (game.size,3))
+math.randomseed(os.time())
+
+function RPlayer:doMove (game)
+    local size = math.pow (game.size,3)
     local action = nil
     repeat
-        local pos = math.floor (math.rand()* size)
+        local pos = math.floor (math.random()* size)+1
         action = torch.zeros (size)
         action [pos] = 1 -- one hot
         action = action:view (game.size, game.size, game.size)
-    until
-    game:doAction (action)
+        print (string.format(
+            "  %s: 'I will randomly try %d, might be allowed :)'."
+            ,self.name,
+            pos)
+        )
+    until game:isAllowed (action)
+    return action
 end
