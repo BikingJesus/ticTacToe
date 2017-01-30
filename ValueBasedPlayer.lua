@@ -13,21 +13,28 @@ function VBPlayer:chooseBestAction (state)
         return nil
     end
     local moves  = {}
+    local acc = 0
+    local acumumlatedValues = {}
     for pos = 1, math.pow (game.size,3) do
         --allowed?
         if (flatState[pos] == 0) then
             local action = torch.zeros (math.pow (game.size, 3))
             action [pos] = 1
             action = action:view (game.size,game.size, game.size)
-           table.insert (moves, {a = action, v = self:value (state,action)})
+	    local val = self:value (state, action)
+           table.insert (moves, {a = action, v = cal})
+            acc = acc + math.exp (val)
+            table.insert (acumumlatedValues, acc)
         end
     end
-    local function comp (a,b) 
-        return a.v > b.v
-    end
-    table.sort (moves,comp)
-    assert (#moves > 0, (string.format ("no move possible%s",state)))
-    return moves[1].a
+
+    local rand = math.random (acc-0.1)
+    
+    local i = 1
+    while (acumumlatedValues[i]<=rand) do print (rand, acc, acumumlatedValues, i) i = i+1 end
+    
+    return moves [i].a
+	
 end
 
 function VBPlayer:value (state, action)
