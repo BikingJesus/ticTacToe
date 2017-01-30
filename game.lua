@@ -10,7 +10,7 @@ function Game:__init(size, player1, player2)
     self.size = size
     self.currentPlayer = 1
     self.count = 0
-    self.students = {}
+--    self.students = {}
 end
 
 function Game:getWinner ()
@@ -19,8 +19,8 @@ function Game:getWinner ()
     local d2 =    field:sum(2):max()
     local d3 =    field:sum(3):max()
     --print (d1,d2,d3)
-    local staight = math.max (d1,d2,d3)
-    if staight == self.size then
+    local maxRows  = math.max (d1,d2,d3)
+    if maxRows == self.size then
         return self.currentPlayer
     end
 
@@ -31,24 +31,39 @@ function Game:run ()
     local won = false
     while (not won) do
         local movesLeft = math.pow(self.size,3) - self.count
+        local lastMove = nil
+        local lastState = nil
         if (movesLeft  > 0) then 
             local player = self.player [self.currentPlayer]
             assert (player)
-            print (string.format ("%s, Choose Move... %d moves possible", 
-                player,
-                movesLeft)
-            )
+            --print (string.format ("%s, Choose Move... %d moves possible", 
+            --player,
+            --movesLeft)
+            --)
             local action =  player:doMove (self, self.currentPlayer)
             assert (action, string.format("No action given by player %s", player))
-            print (string.format("Move chosen. Thx %s.",player))
+            --print (string.format("Move chosen. Thx %s.",player))
             won = self:doAction (action)
---            print (self.field)
-    --        local t0 = os.clock()
-    --        while (os.clock() - t0 < .01) do end
-           else
-               won = 0
-               print "No more move possible. -- Drawn."
-           end
+            --            print (self.field)
+            --        local t0 = os.clock()
+              --      while (os.clock() - t0 < 1) do end
+                    --self:plot()
+
+
+            -- train
+            if (won) then -- if ganme over teach both
+                player:teach (1)
+                --currentPlayer already got updated
+                self.player[self.currentPlayer] :teach (-1)
+            else  -- otherwise wait for oponent
+                self.player[self.currentPlayer] :teach (0)
+            end
+        else
+            -- train (he waited for oponent)
+            self.player[self.currentPlayer * -1] :teach (0)
+            won = 0
+            print "No more move possible. -- Drawn."
+        end
 
     end
     print "game is over"
@@ -67,26 +82,14 @@ function Game:doAction (action)
         assert (self.field:sum() - sumOld == self.currentPlayer)
         won = self:getWinner ()
         self.count = self.count + 1
-        print (string.format(
-        "Action done. You %s won.",
-        won and "have" or "have not yet"))
-        self:teach (originalField, action)
+        --print (string.format(
+        --"Action done. You %s won.",
+        --won and "have" or "have not yet"))
         self.currentPlayer = self.currentPlayer * -1
     else
         print "Action not possible."
     end
     return won
-end
-
-function Game:teach (field, move)
-    field = field * self.currentPlayer
-    move = move * self.currentPlayer
-    local reward = self:getWinner () and 1 or 0
-    for _, student in ipairs (self.students) do
-        local err = students:learn (reward, field, move)
-        print (err)
-    end
-
 end
 
 function Game:isAllowed (action)
@@ -147,12 +150,12 @@ function Game:plot ()
         player[ 0].z:narrow(1,1,count[ 0]-1)}
     end
     if count[ 1]>1 then p1 ={
-        "Player1", player[ 1].x:narrow(1,1,count[ 1]-1),
+        self.player[1]:__tostring__(), player[ 1].x:narrow(1,1,count[ 1]-1),
         player[ 1].y:narrow(1,1,count[ 1]-1),
         player[ 1].z:narrow(1,1,count[ 1]-1)}
     end
     if count[-1]>1 then p2 ={
-        "Player2", player[-1].x:narrow(1,1,count[-1]-1),
+        self.player[-1]:__tostring__(), player[-1].x:narrow(1,1,count[-1]-1),
         player[-1].y:narrow(1,1,count[-1]-1),
         player[-1].z:narrow(1,1,count[-1]-1)}
     end
