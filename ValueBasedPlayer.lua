@@ -28,13 +28,13 @@ function VBPlayer:chooseBestAction (state)
         end
     end
 
-    local rand = math.random (acc-0.1)
-    
+    local rand = math.random ()*acc
+
     local i = 1
-    while (acumumlatedValues[i]<=rand) do print (rand, acc, acumumlatedValues, i) i = i+1 end
-    
-    return moves [i].a
-	
+    while (acumumlatedValues[i]<=rand) do
+        i = i+1
+    end
+    return moves[i].a
 end
 
 function VBPlayer:value (state, action)
