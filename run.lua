@@ -29,7 +29,7 @@ function train (iter, player1, player2)
     local errsH = {}
     local errsI = {}
     for j = 1 , iter do
-        for i = 1, 20 do
+        for i = 1, 100 do
             game = TicTacToe (size,player1,player2)
             local winner = game:run() or 0
             print ("Winner",winner)
@@ -58,21 +58,21 @@ function train (iter, player1, player2)
     print ("training Finished")
 end
 train (100, igor, hans)
---
---result = {}
---for i = 1, 20 do
---    game = TicTacToe (size,deepHans ,deepHans)
---    local winner = game:run() or 0
---    print ("Winner",winner)
---    results[winner] = results[winner]+1
---end
---print (results)
---result = {}
---for i = 1, 20 do
---    game = TicTacToe (size,deepIgor ,deepBoth)
---    local winner = game:run() or 0
---    print ("Winner",winner)
---    results[winner] = results[winner]+1
---end
---print (results)
---result = {}
+
+result = {}
+for i = 1, 200 do
+    game = TicTacToe (size,deepHans ,deepHans)
+    local winner = game:run() or 0
+    print ("Winner",winner)
+    results[winner] = results[winner]+1
+end
+print (results)
+result = {}
+for i = 1, 200 do
+    game = TicTacToe (size,deepIgor ,deepBoth)
+    local winner = game:run() or 0
+    print ("Winner",winner)
+    results[winner] = results[winner]+1
+end
+print (results)
+result = {}
