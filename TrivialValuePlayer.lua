@@ -8,7 +8,7 @@ function TValuePlayer:judgeState (field)
     local value = 0
     for d = 1, field:dim() do
         local sum = field:sum(d)
-        value = value +(sum:pow(3)):sum() --
+        value = value + (sum:pow(3)):sum() --
     end
-    return value
+    return value / 1000 -- otherwise values become to big later.
 end

@@ -10,6 +10,7 @@ function DPlayer:__init (decay, learnRate , size, ...)
     self.net:add (nn.Linear (2*math.pow (size,3),size))
             :add (nn.Tanh())
             :add (nn.Linear (size ,1))
+            :add (nn.Tanh ())
     self.err = 0
 end
 

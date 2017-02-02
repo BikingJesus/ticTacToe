@@ -28,8 +28,8 @@ function VBPlayer:chooseBestAction (state)
         end
     end
 
-    local rand = math.random ()*acc
-
+    local rand = math.random ()*(acc)
+    assert (rand < acc)
     local i = 1
     while (acumumlatedValues[i]<=rand) do
         i = i+1

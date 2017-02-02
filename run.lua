@@ -10,7 +10,7 @@ igor = RandomPlayer ("Igor")
 hans = RandomPlayer ("Vladimir")
 hans = TrivialValuePlayer ("Hans")
 kurt = TrivialValuePlayer ("Kurt")
-size = 3
+size = 5
 learnRate = 0.00005
 decay = 0.9
 deepBoth = DeepValuePlayer (decay,learnRate , size, "Bothson")
@@ -29,10 +29,10 @@ function train (iter, player1, player2)
     local errsH = {}
     local errsI = {}
     for j = 1 , iter do
-        for i = 1, 100 do
+        for i = 1, 30 do
             game = TicTacToe (size,player1,player2)
             local winner = game:run() or 0
-            print ("Winner",winner)
+            print (j,i, "Winner",winner)
             results[winner] = results[winner]+1
         end
         errsB[j] = (deepBoth.err /deepBoth.countLearnSteps)
